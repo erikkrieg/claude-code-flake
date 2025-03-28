@@ -1,6 +1,3 @@
-# Justfile for claude-code-flake
-
-# Set environment variables for all commands
 set export := true
 NIXPKGS_ALLOW_UNFREE := "1"
 
@@ -13,13 +10,16 @@ build *ARGS:
     nix build --impure {{ARGS}}
 
 # Run tests
-test:
-    nix flake check --impure
+test *ARGS:
+    nix flake check --impure {{ARGS}}
 
 # Enter a development shell
-dev:
-    nix develop --impure
+dev *ARGS:
+    nix develop --impure {{ARGS}}
 
 # Show information about the flake
 info:
     nix flake show
+
+run *ARGS:
+    nix run --impure {{ARGS}}
