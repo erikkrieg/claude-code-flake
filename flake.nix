@@ -5,6 +5,7 @@
   };
   outputs = { self, nixpkgs }:
     let
+      version = "0.2.56";
       allSystems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -16,22 +17,19 @@
       });
     in
     {
-      packages = forAllSystems ({ pkgs }: {
-        claude-code = (import ./default.nix { inherit pkgs; }).claude-code;
-        default = (import ./default.nix { inherit pkgs; }).claude-code;
+      packages = forAllSystems ({ pkgs }: rec {
+        claude-code = (import ./default.nix { inherit pkgs version; }).claude-code;
+        default = claude-code;
       });
-      
-      apps = forAllSystems ({ pkgs }: {
-        default = {
-          type = "app";
-          program = "${self.packages.${pkgs.system}.default}/bin/claude";
-        };
+
+      apps = forAllSystems ({ pkgs }: rec {
         claude-code = {
           type = "app";
           program = "${self.packages.${pkgs.system}.claude-code}/bin/claude";
         };
+        default = claude-code;
       });
-      
+
       devShells = forAllSystems ({ pkgs }: {
         default = pkgs.mkShell {
           packages = with pkgs; [
@@ -40,14 +38,9 @@
           ];
         };
       });
-      
-      checks = forAllSystems ({ pkgs }: 
-        let
-          tests = import ./tests.nix { inherit pkgs; };
-        in
-        {
-          inherit (tests) smokeTest versionTest helpTest nodeTest;
-        }
+
+      checks = forAllSystems ({ pkgs }:
+        import ./tests.nix { inherit pkgs version; }
       );
     };
 }

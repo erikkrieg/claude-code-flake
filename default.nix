@@ -7,7 +7,6 @@
     dontNpmBuild = true;
 
     postPatch = ''
-      # Update package.json to use the specified version
       substituteInPlace package.json \
         --replace '"@anthropic-ai/claude-code": "latest"' '"@anthropic-ai/claude-code": "${version}"'
     '';

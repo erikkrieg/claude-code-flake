@@ -17,9 +17,11 @@ test *ARGS:
 dev *ARGS:
     nix develop --impure {{ARGS}}
 
+alias show := info
 # Show information about the flake
 info:
     nix flake show
 
+# Run a command from the package
 run *ARGS:
     nix run --impure {{ARGS}}
