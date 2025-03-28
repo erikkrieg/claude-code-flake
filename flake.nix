@@ -18,7 +18,7 @@
     in
     {
       packages = forAllSystems ({ pkgs }: rec {
-        claude-code = (import ./default.nix { inherit pkgs version; }).claude-code;
+        inherit ((import ./default.nix { inherit pkgs version; })) claude-code;
         default = claude-code;
       });
 
@@ -35,6 +35,8 @@
           packages = with pkgs; [
             nodejs
             just
+            nixpkgs-fmt
+            statix
           ];
         };
       });
