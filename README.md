@@ -43,7 +43,7 @@ nix run github:erikkrieg/claude-code-flake
       packages = forAllSystems ({ pkgs }: {
         default = claude-code-flake.packages.${pkgs.system}.claude-code;
       });
-      
+
       # Or in an environment
       devShells = forAllSystems ({ pkgs }: {
         default = pkgs.mkShell {
@@ -66,7 +66,7 @@ nix develop
 
 ### Build commands
 
-This project uses [just](https://github.com/casey/just) as a command runner. Available commands:
+This project uses [just](https://github.com/casey/just) as a command runner. Available commands include:
 
 ```bash
 # List available commands
@@ -74,6 +74,9 @@ just
 
 # Build the package
 just build
+
+# Test flake outputs
+just test
 
 # Enter development shell
 just dev
