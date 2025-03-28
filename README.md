@@ -2,18 +2,20 @@
 
 A Nix flake for the [Claude Code CLI](https://docs.anthropic.com/claude/docs/claude-code) by Anthropic.
 
+> **Note:** You'll need an Anthropic API key set up as described in the [Claude Code documentation](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview).
+
 ## Usage
 
 ### Install using nix profile
 
 ```bash
-nix profile install github:username/claude-code-flake
+nix profile install github:erikkrieg/claude-code-flake
 ```
 
 ### Run directly
 
 ```bash
-nix run github:username/claude-code-flake
+nix run github:erikkrieg/claude-code-flake
 ```
 
 ### Use in another flake
@@ -22,23 +24,34 @@ nix run github:username/claude-code-flake
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    claude-code-flake.url = "github:username/claude-code-flake";
+    claude-code-flake.url = "github:erikkrieg/claude-code-flake";
   };
 
   outputs = { self, nixpkgs, claude-code-flake }:
     let
-      system = "x86_64-linux";  # or your system
-      pkgs = nixpkgs.legacyPackages.${system};
+      allSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+      forAllSystems = f: nixpkgs.lib.genAttrs allSystems (system: f {
+        pkgs = import nixpkgs { inherit system; };
+      });
     in {
       # Use the package
-      packages.${system}.default = claude-code-flake.packages.${system}.claude-code;
+      packages = forAllSystems ({ pkgs }: {
+        default = claude-code-flake.packages.${pkgs.system}.claude-code;
+      });
       
       # Or in an environment
-      devShells.${system}.default = pkgs.mkShell {
-        packages = [
-          claude-code-flake.packages.${system}.claude-code
-        ];
-      };
+      devShells = forAllSystems ({ pkgs }: {
+        default = pkgs.mkShell {
+          packages = [
+            claude-code-flake.packages.${pkgs.system}.claude-code
+          ];
+        };
+      });
     };
 }
 ```
