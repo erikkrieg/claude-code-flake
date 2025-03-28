@@ -1,0 +1,9 @@
+{
+  "name": "claude-code-wrapper",
+  "version": "1.0.0",
+  "description": "Wrapper for Claude Code CLI",
+  "private": true,
+  "dependencies": {
+    "@anthropic-ai/claude-code": "latest"
+  }
+}

@@ -9,8 +9,8 @@ default:
     @just --list
 
 # Build the package
-build:
-    nix build --impure
+build *ARGS:
+    nix build --impure {{ARGS}}
 
 # Run tests
 test:

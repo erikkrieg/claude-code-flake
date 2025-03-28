@@ -1,51 +1,32 @@
 { pkgs, version ? "latest" }: {
-  claude-code = pkgs.stdenv.mkDerivation {
+  claude-code = pkgs.buildNpmPackage {
     pname = "claude-code";
     inherit version;
-    src = null;
-    unpackPhase = "true";
-    nativeBuildInputs = [ pkgs.nodejs ];
-    buildInputs = [ pkgs.cacert ];
+    src = ./.;
+    npmDepsHash = "sha256-eLlupD2G3rXk9nM6knrrKq0nLxeJiZX6AWogEB1pTWk=";
+    dontNpmBuild = true;
 
-    buildPhase = ''
-      mkdir -p build
-      cat > build/package.json <<EOF
-      {
-        "name": "claude-code-wrapper",
-        "version": "1.0.0",
-        "description": "Wrapper for Claude Code CLI",
-        "dependencies": {
-          "@anthropic-ai/claude-code": "${version}"
-        }
-      }
-      EOF
+    postPatch = ''
+      # Update package.json to use the specified version
+      substituteInPlace package.json \
+        --replace '"@anthropic-ai/claude-code": "latest"' '"@anthropic-ai/claude-code": "${version}"'
     '';
 
     installPhase = ''
-      export HOME=$PWD
-      export SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
-      export NODE_TLS_REJECT_UNAUTHORIZED=0
       mkdir -p $out/bin $out/lib
-      cp -r build/* $out/lib/
-      cd $out/lib
-      echo "Installing package..."
-      npm install --no-fund
+      cp -r node_modules/* $out/lib/
       cat > $out/bin/claude <<EOF
       #!/bin/sh
-      export NODE_PATH=$out/lib/node_modules
-      
-      # Add special flags for testing
+      export NODE_PATH=$out/lib
       if [ "\$1" = "--print-node-path" ]; then
         echo \$NODE_PATH
         exit 0
       fi
-      
       if [ "\$1" = "--node-version" ]; then
         exec ${pkgs.nodejs}/bin/node --version
         exit 0
       fi
-      
-      exec ${pkgs.nodejs}/bin/node $out/lib/node_modules/@anthropic-ai/claude-code/cli.js "\$@"
+      exec ${pkgs.nodejs}/bin/node $out/lib/@anthropic-ai/claude-code/cli.js "\$@"
       EOF
       chmod +x $out/bin/claude
     '';
