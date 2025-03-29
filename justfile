@@ -25,3 +25,8 @@ info:
 # Run a command from the package
 run *ARGS:
     nix run --impure {{ARGS}}
+
+# Lint Nix files
+lint:
+    nixpkgs-fmt --check *.nix
+    statix check .
