@@ -12,8 +12,11 @@
         "x86_64-darwin"
         "aarch64-darwin"
       ];
+      config = {
+        allowUnfree = true;
+      };
       forAllSystems = f: nixpkgs.lib.genAttrs allSystems (system: f {
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs { inherit system config; };
       });
     in
     {
