@@ -29,12 +29,5 @@
       EOF
       chmod +x $out/bin/claude
     '';
-
-    meta = with pkgs.lib; {
-      description = "Claude Code is an agentic coding tool that lives in your terminal, understands your codebase, and helps you code faster by executing routine tasks, explaining complex code, and handling git workflows - all through natural language commands.";
-      homepage = "https://docs.anthropic.com/s/claude-code";
-      license = licenses.unfree;
-      platforms = platforms.all;
-    };
   };
 }

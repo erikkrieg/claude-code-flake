@@ -1,6 +1,3 @@
-set export := true
-NIXPKGS_ALLOW_UNFREE := "1"
-
 # List available commands
 default:
     @just --list
